@@ -1,19 +1,28 @@
 package com.uber.backend.mini_uber_backend.controllers;
 
+import com.uber.backend.mini_uber_backend.model.Rider;
 import com.uber.backend.mini_uber_backend.model.Trip;
+import com.uber.backend.mini_uber_backend.service.TripRequestProducer;
 import com.uber.backend.mini_uber_backend.service.TripService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 @RestController
-@RequestMapping("/api/trip")
+@RequestMapping("/trips")
 public class TripController {
-    @Autowired
-    private TripService tripService;
-@PostMapping("/request")
-    public Trip tripRequest(@RequestBody Trip trip){
-        return tripService.requestTrip(trip);
+
+    private final TripRequestProducer tripRequestProducer;
+
+    public TripController(TripRequestProducer tripRequestProducer) {
+        this.tripRequestProducer = tripRequestProducer;
+    }
+
+    @PostMapping("/request")
+    public String requestTrip(@RequestBody Rider rider) {
+        tripRequestProducer.sendTripRequest(rider);
+        return "Trip request sent for rider: " + rider.getName();
     }
 }
